@@ -1,0 +1,3537 @@
+<!DOCTYPE html>
+<html lang="ko" class="theme-dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MentoHub - 대학생 멘토링 프로그램 통합 관리</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* Google Fonts Import */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+    /* ==========================================================================
+       1. VARIABLES & THEMING (from variables.css)
+       ========================================================================== */
+    :root {
+      --font-primary: 'Outfit', 'Inter', 'Noto Sans KR', sans-serif;
+      --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      --border-radius-sm: 8px;
+      --border-radius-md: 14px;
+      --border-radius-lg: 20px;
+      --box-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+      --box-shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --box-shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.12);
+      --glow-indigo: 0 0 15px rgba(99, 102, 241, 0.3);
+      
+      --grad-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      --grad-primary-hover: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+      --grad-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    }
+
+    /* Light Theme Variables */
+    :root, .theme-light {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --bg-sidebar: #0f172a;
+      
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-tertiary: #94a3b8;
+      --text-on-sidebar: #f8fafc;
+      
+      --border-color: #e2e8f0;
+      --border-color-glow: rgba(99, 102, 241, 0.15);
+      
+      --card-shadow: var(--box-shadow-md);
+      
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-danger: #ef4444;
+      --color-info: #3b82f6;
+      --color-primary: #6366f1;
+      
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.5);
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
+    }
+
+    /* Dark Theme Variables */
+    .theme-dark {
+      --bg-primary: #090d16;
+      --bg-secondary: #131926;
+      --bg-tertiary: #1b2336;
+      --bg-sidebar: #0b0f19;
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-tertiary: #64748b;
+      --text-on-sidebar: #f8fafc;
+      
+      --border-color: #222c40;
+      --border-color-glow: rgba(168, 85, 247, 0.25);
+      
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      
+      --color-success: #34d399;
+      --color-warning: #fbbf24;
+      --color-danger: #f87171;
+      --color-info: #60a5fa;
+      --color-primary: #a855f7;
+      
+      --glass-bg: rgba(19, 25, 38, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.05);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    /* ==========================================================================
+       2. GLOBAL LAYOUTS & RE-SETS (from styles.css)
+       ========================================================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: var(--transition-normal);
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: var(--border-radius-sm);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-tertiary);
+    }
+
+    #app-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    aside.sidebar {
+      background-color: var(--bg-sidebar);
+      color: var(--text-on-sidebar);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 2rem 1.5rem;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      z-index: 10;
+      transition: var(--transition-normal);
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 3rem;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--grad-primary);
+      border-radius: var(--border-radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #fff;
+      box-shadow: var(--glow-indigo);
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-grow: 1;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: rgba(255, 255, 255, 0.6);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      border-radius: var(--border-radius-sm);
+      transition: var(--transition-normal);
+    }
+
+    .nav-item a i {
+      font-size: 1.2rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .nav-item a:hover {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-item.active a {
+      color: #fff;
+      background: var(--grad-primary);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    }
+
+    .sidebar-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 1.5rem;
+    }
+
+    .user-profile-summary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--grad-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #fff;
+      font-size: 1.1rem;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      align-self: flex-start;
+      margin-top: 2px;
+    }
+
+    .sidebar-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-toggle-theme, .btn-logout {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      transition: var(--transition-normal);
+    }
+
+    .btn-toggle-theme:hover, .btn-logout:hover {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    main.main-content {
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      height: 100vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.5rem;
+    }
+
+    .header-title h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header-title p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      font-family: var(--font-primary);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--border-radius-sm);
+      border: none;
+      cursor: pointer;
+      transition: var(--transition-normal);
+    }
+
+    .btn-primary {
+      background: var(--grad-primary);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--grad-primary-hover);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--border-color);
+      transform: translateY(-1px);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .form-control {
+      padding: 10px 14px;
+      font-family: var(--font-primary);
+      font-size: 0.95rem;
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      border-radius: var(--border-radius-sm);
+      outline: none;
+      transition: var(--transition-normal);
+    }
+
+    .form-control:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--border-color-glow);
+    }
+
+    .glass-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-md);
+      padding: 1.75rem;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition-normal);
+    }
+
+    .view-panel {
+      display: none;
+      animation: fadeIn 0.4s ease;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .view-panel.active {
+      display: flex;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-lg);
+      padding: 2rem;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: var(--box-shadow-lg);
+      animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .btn-close-modal {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .modal-footer {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 12px;
+    }
+
+    .badge-primary {
+      background-color: var(--border-color-glow);
+      color: var(--color-primary);
+    }
+
+    .badge-success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--color-success);
+    }
+
+    .badge-warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--color-warning);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       3. AUTH COMPONENT STYLES (from auth.css)
+       ========================================================================== */
+    .login-card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--box-shadow-lg);
+      border-radius: var(--border-radius-lg);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .login-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+
+    .login-header .logo-icon {
+      width: 60px;
+      height: 60px;
+      font-size: 2rem;
+    }
+
+    .login-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: var(--grad-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .login-header p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .login-subtitle {
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .login-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-login-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 1rem;
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-md);
+      text-align: left;
+      cursor: pointer;
+      transition: var(--transition-normal);
+    }
+
+    .btn-login-option:hover {
+      background-color: var(--bg-secondary);
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .option-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--border-color-glow);
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-right: 14px;
+      flex-shrink: 0;
+      transition: var(--transition-normal);
+    }
+
+    .btn-login-option:hover .option-icon {
+      background: var(--grad-primary);
+      color: #fff;
+      box-shadow: var(--glow-indigo);
+    }
+
+    .option-info {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .option-title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+
+    .option-desc {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .arrow-icon {
+      color: var(--text-tertiary);
+      font-size: 1rem;
+      transition: var(--transition-normal);
+    }
+
+    .btn-login-option:hover .arrow-icon {
+      color: var(--text-primary);
+      transform: translateX(4px);
+    }
+
+    .mentor-btn:hover { border-color: #6366f1; }
+    .mentee-btn:hover { border-color: #a855f7; }
+    .admin-btn:hover { border-color: #10b981; }
+
+    .role-selector-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-sm);
+      box-shadow: var(--box-shadow-sm);
+    }
+
+    .role-selector-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    #quick-role-select {
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      font-family: var(--font-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #quick-role-select option {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      font-weight: normal;
+    }
+
+    /* ==========================================================================
+       4. DASHBOARD STYLES (from dashboard.css)
+       ========================================================================== */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .stat-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--border-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #fff;
+    }
+
+    .stat-icon.purple {
+      background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%);
+      box-shadow: 0 4px 15px rgba(168, 85, 247, 0.25);
+    }
+
+    .stat-icon.indigo {
+      background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+    }
+
+    .stat-icon.emerald {
+      background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
+    }
+
+    .stat-data {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .next-session-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .next-session-card h3, .pair-info-card h3, .recent-activity-card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .session-info-box {
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .session-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .dday-badge {
+      background: var(--grad-primary);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 12px;
+      box-shadow: var(--glow-indigo);
+    }
+
+    .dday-badge.today {
+      background: linear-gradient(135deg, #ef4444 0%, #f43f5e 100%);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+    }
+
+    .session-subject {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--color-primary);
+    }
+
+    .session-time, .session-topic {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-top: 6px;
+    }
+
+    .session-time i, .session-topic i {
+      color: var(--text-tertiary);
+      width: 16px;
+    }
+
+    .pair-details {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .pair-member {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 45%;
+    }
+
+    .p-label {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+    }
+
+    .p-value {
+      font-weight: 600;
+      font-size: 0.9rem;
+      line-height: 1.3;
+    }
+
+    .pair-arrow {
+      color: var(--text-tertiary);
+      font-size: 1.2rem;
+    }
+
+    .program-period {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      border-left: 3px solid var(--color-primary);
+      padding-left: 10px;
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      padding-left: 24px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background-color: var(--border-color);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 1.5rem;
+    }
+
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -20px;
+      top: 4px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--text-tertiary);
+      border: 2px solid var(--bg-secondary);
+      z-index: 1;
+      transition: var(--transition-normal);
+    }
+
+    .timeline-item.active .timeline-dot {
+      background-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--border-color-glow);
+    }
+
+    .timeline-item.completed .timeline-dot {
+      background-color: var(--color-success);
+    }
+
+    .timeline-content {
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-sm);
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      transition: var(--transition-normal);
+    }
+
+    .timeline-content:hover {
+      transform: translateX(4px);
+      border-color: var(--border-color-glow);
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .timeline-title {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .timeline-time {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+    }
+
+    .timeline-desc {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ==========================================================================
+       5. CALENDAR STYLES (from calendar.css)
+       ========================================================================== */
+    .calendar-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .calendar-card-wrapper {
+      padding: 1.5rem;
+    }
+
+    .calendar-header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .calendar-nav h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      min-width: 140px;
+      text-align: center;
+    }
+
+    .calendar-grid-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+    }
+
+    .calendar-grid-header div:first-child { color: var(--color-danger); }
+    .calendar-grid-header div:last-child { color: var(--color-info); }
+
+    .calendar-days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-auto-rows: minmax(100px, 1fr);
+      border-left: 1px solid var(--border-color);
+      border-top: 1px solid var(--border-color);
+    }
+
+    .calendar-day {
+      background-color: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      transition: var(--transition-normal);
+    }
+
+    .calendar-day:hover {
+      background-color: var(--bg-tertiary);
+    }
+
+    .day-number-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .day-number {
+      font-weight: 600;
+      font-size: 0.85rem;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      color: var(--text-primary);
+    }
+
+    .calendar-day.sunday .day-number { color: var(--color-danger); }
+    .calendar-day.saturday .day-number { color: var(--color-info); }
+
+    .calendar-day.outside {
+      opacity: 0.35;
+    }
+
+    .calendar-day.today-cell {
+      background-color: var(--border-color-glow);
+    }
+    .calendar-day.today-cell .day-number {
+      background: var(--grad-primary);
+      color: #fff;
+      box-shadow: var(--glow-indigo);
+    }
+
+    .calendar-event-pill {
+      font-size: 0.75rem;
+      padding: 4px 6px;
+      border-radius: 4px;
+      background-color: var(--bg-tertiary);
+      border-left: 3px solid var(--color-primary);
+      color: var(--text-primary);
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: var(--transition-normal);
+    }
+
+    .calendar-event-pill:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+      box-shadow: var(--box-shadow-sm);
+    }
+
+    .calendar-event-pill.completed {
+      border-left-color: var(--color-success);
+      background-color: rgba(16, 185, 129, 0.08);
+    }
+
+    .calendar-event-pill.scheduled {
+      border-left-color: var(--color-info);
+      background-color: rgba(59, 130, 246, 0.08);
+    }
+
+    .schedule-sidebar-panel {
+      height: 100%;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .schedule-list-mini {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .mini-schedule-item {
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--color-primary);
+      border-radius: var(--border-radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: var(--transition-normal);
+      cursor: pointer;
+    }
+
+    .mini-schedule-item:hover {
+      border-color: var(--border-color-glow);
+      transform: translateX(3px);
+    }
+
+    .mini-schedule-item.completed { border-left-color: var(--color-success); }
+    .mini-schedule-item.scheduled { border-left-color: var(--color-info); }
+
+    .mini-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mini-item-date {
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .mini-item-subject {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .mini-item-time, .mini-item-topic {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-list-text {
+      text-align: center;
+      color: var(--text-tertiary);
+      font-size: 0.85rem;
+      padding: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .calendar-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ==========================================================================
+       6. STUDY LOGS STYLES (from logs.css)
+       ========================================================================== */
+    .logs-header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+    }
+
+    .section-title-desc {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .log-form-card {
+      animation: slideDown 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    .col-6 {
+      flex: 1;
+    }
+
+    .range-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .range-container input[type="range"] {
+      flex-grow: 1;
+      accent-color: var(--color-primary);
+    }
+
+    #progress-val {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--color-primary);
+      min-width: 40px;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 1.5rem;
+    }
+
+    .logs-list-card {
+      padding: 1.5rem;
+      overflow: hidden;
+    }
+
+    .logs-table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+
+    .logs-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .logs-table th, .logs-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .logs-table th {
+      font-weight: 600;
+      color: var(--text-secondary);
+      background-color: var(--bg-tertiary);
+    }
+
+    .logs-table tbody tr {
+      transition: var(--transition-normal);
+    }
+
+    .logs-table tbody tr:hover {
+      background-color: var(--bg-tertiary);
+    }
+
+    .logs-table td .log-text-detail {
+      max-width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-secondary);
+    }
+
+    .table-progress-bar {
+      width: 80px;
+      height: 8px;
+      background-color: var(--border-color);
+      border-radius: 4px;
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    .table-progress-fill {
+      height: 100%;
+      background: var(--grad-primary);
+      border-radius: 4px;
+    }
+
+    .table-progress-text {
+      font-weight: 600;
+      font-size: 0.8rem;
+      vertical-align: middle;
+    }
+
+    .actions-col {
+      text-align: right;
+    }
+
+    .btn-table-action {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      transition: var(--transition-normal);
+    }
+
+    .btn-table-action:hover {
+      background-color: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .btn-table-action.delete:hover {
+      color: var(--color-danger);
+      background-color: rgba(239, 68, 68, 0.08);
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+
+    /* ==========================================================================
+       7. FEED STYLES (from feed.css)
+       ========================================================================== */
+    .feed-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .feed-write-card {
+      padding: 1.5rem;
+    }
+
+    .feed-write-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .feed-write-user-info {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .feed-write-user-info i {
+      color: var(--color-primary);
+      margin-right: 4px;
+    }
+
+    .feed-post-card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-md);
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .feed-post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .feed-post-header-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .feed-author-name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feed-author-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .feed-post-date {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+
+    .feed-post-body {
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    .feed-post-actions {
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      padding: 8px 0;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .feed-action-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: var(--transition-normal);
+    }
+
+    .feed-action-btn:hover {
+      background-color: var(--bg-tertiary);
+      color: var(--color-primary);
+    }
+
+    .feed-comments-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background-color: var(--bg-primary);
+      border-radius: var(--border-radius-sm);
+      padding: 12px;
+    }
+
+    .feed-comment-item {
+      display: flex;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .feed-comment-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .comment-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--grad-primary);
+      color: white;
+      font-weight: 700;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .comment-content-box {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .comment-author-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .comment-author-name {
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .comment-text {
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .comment-date {
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    .write-comment-box {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .write-comment-input {
+      flex-grow: 1;
+      padding: 8px 12px;
+      font-family: var(--font-primary);
+      font-size: 0.85rem;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      border-radius: var(--border-radius-sm);
+      outline: none;
+      transition: var(--transition-normal);
+    }
+
+    .write-comment-input:focus {
+      border-color: var(--color-primary);
+    }
+
+    .btn-comment-submit {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+    }
+
+    /* ==========================================================================
+       8. REPORT STYLES (from report.css)
+       ========================================================================== */
+    .report-generator-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .report-config-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .report-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .report-form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .report-tip-box {
+      background-color: var(--bg-tertiary);
+      border-left: 3px solid var(--color-warning);
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .report-preview-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .report-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .report-print-container {
+      background-color: #ffffff;
+      color: #000000 !important;
+      font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      padding: 40px 50px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .report-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+      font-size: 5rem;
+      color: rgba(0, 0, 0, 0.03);
+      font-weight: 800;
+      pointer-events: none;
+      text-transform: uppercase;
+      letter-spacing: 10px;
+    }
+
+    .report-print-container h2,
+    .report-print-container h4,
+    .report-print-container th,
+    .report-print-container td,
+    .report-print-container p,
+    .report-print-container div {
+      color: #111827 !important;
+    }
+
+    .report-print-header {
+      text-align: center;
+      border-bottom: 2px double #111827;
+      padding-bottom: 20px;
+      margin-bottom: 25px;
+    }
+
+    .report-print-header h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .report-meta-dates {
+      font-size: 0.9rem;
+      color: #4b5563 !important;
+      margin-top: 10px;
+    }
+
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+    }
+
+    .report-table th, .report-table td {
+      border: 1px solid #9ca3af;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    .report-table th {
+      background-color: #f3f4f6 !important;
+      font-weight: 700;
+    }
+
+    .info-table td {
+      text-align: left;
+      padding-left: 12px;
+    }
+
+    .detail-table td {
+      vertical-align: middle;
+    }
+
+    .detail-table td.empty-text {
+      padding: 30px;
+      color: #9ca3af !important;
+      font-style: italic;
+    }
+
+    .report-section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      border-left: none;
+      padding-left: 0;
+    }
+
+    .report-summary-box {
+      border: 1px solid #9ca3af;
+      border-radius: 4px;
+      padding: 8px;
+      background-color: #f9fafb;
+    }
+
+    .report-editable-textarea {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      resize: vertical;
+      color: #111827 !important;
+    }
+
+    .report-editable-textarea:focus {
+      background-color: #f3f4f6;
+    }
+
+    .report-signature-section {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .report-signature-section p {
+      font-size: 0.95rem;
+    }
+
+    .report-date-signature {
+      font-size: 0.95rem;
+      margin-top: 20px;
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
+
+    .signatures-row {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+    }
+
+    .sig-col {
+      width: 45%;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .sig-name {
+      float: right;
+      border-bottom: 1px solid #111827;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .report-generator-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mock Login Overlay -->
+  <div id="login-overlay" class="modal-overlay active">
+    <div class="login-card glass-card">
+      <div class="login-header">
+        <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <h2>MentoHub</h2>
+        <p>멘토링 통합 관리 서비스에 오신 것을 환영합니다.</p>
+      </div>
+      <p class="login-subtitle">체험할 역할을 선택하여 원클릭 로그인을 해주세요.</p>
+      <div class="login-options">
+        <button class="btn btn-login-option mentor-btn" onclick="app.login('mentor')">
+          <div class="option-icon"><i class="fa-solid fa-user-tie"></i></div>
+          <div class="option-info">
+            <span class="option-title">멘토로 로그인</span>
+            <span class="option-desc">김민수 (대학생 멘토)</span>
+          </div>
+          <i class="fa-solid fa-chevron-right arrow-icon"></i>
+        </button>
+        <button class="btn btn-login-option mentee-btn" onclick="app.login('mentee')">
+          <div class="option-icon"><i class="fa-solid fa-user"></i></div>
+          <div class="option-info">
+            <span class="option-title">멘티로 로그인</span>
+            <span class="option-desc">이영희 (고등학교 멘티)</span>
+          </div>
+          <i class="fa-solid fa-chevron-right arrow-icon"></i>
+        </button>
+        <button class="btn btn-login-option admin-btn" onclick="app.login('admin')">
+          <div class="option-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="option-info">
+            <span class="option-title">운영자로 로그인</span>
+            <span class="option-desc">사무국 (전체 현황 관리)</span>
+          </div>
+          <i class="fa-solid fa-chevron-right arrow-icon"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application Container -->
+  <div id="app-container" style="display: none;">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-header">
+          <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+          <span class="logo-text">MentoHub</span>
+        </div>
+        <ul class="nav-menu">
+          <li class="nav-item active" data-view="dashboard">
+            <a href="#dashboard"><i class="fa-solid fa-chart-pie"></i>대시보드</a>
+          </li>
+          <li class="nav-item" data-view="calendar">
+            <a href="#calendar"><i class="fa-solid fa-calendar-days"></i>일정 관리</a>
+          </li>
+          <li class="nav-item" data-view="logs">
+            <a href="#logs"><i class="fa-solid fa-book-bookmark"></i>학습 기록</a>
+          </li>
+          <li class="nav-item" data-view="feed">
+            <a href="#feed"><i class="fa-solid fa-comments"></i>소통 피드</a>
+          </li>
+          <li class="nav-item" data-view="report">
+            <a href="#report"><i class="fa-solid fa-file-invoice"></i>활동 보고서</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-summary">
+          <div class="avatar" id="sidebar-user-avatar">M</div>
+          <div class="user-info">
+            <span class="user-name" id="sidebar-user-name">사용자</span>
+            <span class="user-role" id="sidebar-user-role">멘토</span>
+          </div>
+        </div>
+        <div class="sidebar-actions">
+          <button class="btn-toggle-theme" onclick="app.toggleTheme()" title="테마 변경">
+            <i class="fa-solid fa-sun" id="theme-icon"></i>
+          </button>
+          <button class="btn-logout" onclick="app.logout()" title="로그아웃">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Content Top Header -->
+      <div class="content-header">
+        <div class="header-title">
+          <h1 id="view-title">대시보드</h1>
+          <p id="view-subtitle">멘토링 현황을 한눈에 파악합니다.</p>
+        </div>
+        <div class="role-selector-bar glass-card">
+          <span class="role-selector-label"><i class="fa-solid fa-arrows-spin"></i> 역할 변경:</span>
+          <select id="quick-role-select" onchange="app.switchRole(this.value)">
+            <option value="mentor">멘토 (김민수)</option>
+            <option value="mentee">멘티 (이영희)</option>
+            <option value="admin">운영자 (사무국)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- VIEW PANELS -->
+      
+      <!-- 1. DASHBOARD VIEW -->
+      <div id="view-dashboard" class="view-panel active">
+        <!-- Stats Cards Row -->
+        <div class="stats-row">
+          <div class="glass-card stat-card">
+            <div class="stat-icon purple"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-data">
+              <span class="stat-value" id="dash-hours">0시간</span>
+              <span class="stat-label">누적 멘토링 시간</span>
+            </div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-icon indigo"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="stat-data">
+              <span class="stat-value" id="dash-sessions">0회</span>
+              <span class="stat-label">완료된 세션 수</span>
+            </div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-icon emerald"><i class="fa-solid fa-clipboard-list"></i></div>
+            <div class="stat-data">
+              <span class="stat-value" id="dash-logs">0건</span>
+              <span class="stat-label">작성된 학습 기록</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <!-- Next Mentoring Session Card -->
+          <div class="glass-card next-session-card">
+            <h3><i class="fa-solid fa-hourglass-half"></i> 다음 멘토링 일정</h3>
+            <div id="next-session-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Quick Actions & Info -->
+          <div class="glass-card pair-info-card">
+            <h3><i class="fa-solid fa-handshake"></i> 멘토링 매칭 정보</h3>
+            <div class="pair-details">
+              <!-- Dynamic -->
+            </div>
+            <div class="program-period">
+              <span><strong>활동 프로그램:</strong> 대학생 멘토링 지원 사업 15기</span>
+              <span><strong>활동 기간:</strong> 2026.06.01 ~ 2026.08.31 (3개월)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activities Timeline -->
+        <div class="glass-card recent-activity-card">
+          <h3><i class="fa-solid fa-clock-rotate-left"></i> 최근 활동 내역</h3>
+          <div class="timeline" id="dash-timeline">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. CALENDAR VIEW -->
+      <div id="view-calendar" class="view-panel">
+        <div class="calendar-layout">
+          <!-- Calendar Card -->
+          <div class="glass-card calendar-card-wrapper">
+            <div class="calendar-header-actions">
+              <div class="calendar-nav">
+                <button class="btn btn-secondary" onclick="calendarComponent.prevMonth()"><i class="fa-solid fa-chevron-left"></i></button>
+                <h2 id="calendar-month-year">2026년 6월</h2>
+                <button class="btn btn-secondary" onclick="calendarComponent.nextMonth()"><i class="fa-solid fa-chevron-right"></i></button>
+              </div>
+              <button class="btn btn-primary" id="btn-add-schedule" onclick="calendarComponent.openAddModal()">
+                <i class="fa-solid fa-plus"></i> 일정 등록
+              </button>
+            </div>
+            
+            <div class="calendar-grid-header">
+              <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+            </div>
+            <div class="calendar-days-grid" id="calendar-days">
+              <!-- Days loaded dynamically -->
+            </div>
+          </div>
+
+          <!-- Schedule Detail Panel (Sidebar of Calendar) -->
+          <div class="glass-card schedule-sidebar-panel">
+            <h3><i class="fa-solid fa-list-check"></i> 이달의 전체 일정</h3>
+            <div class="schedule-list-mini" id="calendar-list-mini">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. STUDY LOGS VIEW -->
+      <div id="view-logs" class="view-panel">
+        <div class="logs-header-actions">
+          <span class="section-title-desc">멘토링 세션 완료 후 날짜 및 과목별 학습 진행 상황을 상세히 작성합니다.</span>
+          <button class="btn btn-primary" id="btn-open-log-form" onclick="logsComponent.showForm()">
+            <i class="fa-solid fa-pen-to-square"></i> 학습 기록 작성
+          </button>
+        </div>
+
+        <!-- Log Write Form Container (Toggleable) -->
+        <div class="glass-card log-form-card" id="log-form-container" style="display: none;">
+          <h3 id="log-form-title">학습 기록 등록</h3>
+          <form id="study-log-form" onsubmit="logsComponent.handleSubmit(event)">
+            <input type="hidden" id="log-edit-id">
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label for="log-date">학습 일자</label>
+                <input type="date" id="log-date" class="form-control" required>
+              </div>
+              <div class="form-group col-6">
+                <label for="log-subject">학습 과목</label>
+                <select id="log-subject" class="form-control" required>
+                  <option value="수학">수학</option>
+                  <option value="과학">과학</option>
+                  <option value="영어">영어</option>
+                  <option value="코딩">코딩</option>
+                  <option value="기타">기타</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label for="log-hours">학습 시간 (시간 단위)</label>
+                <input type="number" id="log-hours" class="form-control" min="1" max="8" value="2" required>
+              </div>
+              <div class="form-group col-6">
+                <label for="log-topic">학습 주제 (단원명/핵심 개념)</label>
+                <input type="text" id="log-topic" class="form-control" placeholder="예: 삼각함수의 성질" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="log-content">상세 지도 내용 및 진행 상황</label>
+              <textarea id="log-content" class="form-control" rows="4" placeholder="오늘 학습한 세부 내용, 지도 피드백, 멘티의 이해도 등을 상세히 기록해 주세요." required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="log-progress">학습 달성도 / 이해도 (%)</label>
+              <div class="range-container">
+                <input type="range" id="log-progress" min="10" max="100" step="5" value="80" oninput="document.getElementById('progress-val').innerText = this.value + '%'">
+                <span id="progress-val">80%</span>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" onclick="logsComponent.hideForm()">취소</button>
+              <button type="submit" class="btn btn-primary">저장하기</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Logs Timeline/Table List -->
+        <div class="glass-card logs-list-card">
+          <h3><i class="fa-solid fa-folder-open"></i> 누적 학습 기록 목록</h3>
+          <div class="logs-table-responsive">
+            <table class="logs-table">
+              <thead>
+                <tr>
+                  <th>날짜</th>
+                  <th>과목</th>
+                  <th>시간</th>
+                  <th>학습 주제</th>
+                  <th>진행 상세</th>
+                  <th>달성도</th>
+                  <th class="actions-col">관리</th>
+                </tr>
+              </thead>
+              <tbody id="logs-list-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. FEED (Q&A) VIEW -->
+      <div id="view-feed" class="view-panel">
+        <div class="feed-layout">
+          <!-- Feed Write Form Card -->
+          <div class="glass-card feed-write-card">
+            <h3><i class="fa-solid fa-pen-nib"></i> 새로운 글 작성</h3>
+            <form onsubmit="feedComponent.handleSubmit(event)">
+              <div class="form-group">
+                <textarea id="feed-input" class="form-control" rows="3" placeholder="멘토링에 관련한 질문, 공지사항, 피드백 등을 자유롭게 남겨보세요..." required></textarea>
+              </div>
+              <div class="feed-write-footer">
+                <span class="feed-write-user-info" id="feed-write-user"><i class="fa-solid fa-user-pen"></i> 김민수 멘토</span>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> 피드 등록</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Feed Posts List -->
+          <div class="feed-posts-container" id="feed-posts-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. REPORT VIEW -->
+      <div id="view-report" class="view-panel">
+        <div class="report-generator-layout">
+          <!-- Generator Config Card -->
+          <div class="glass-card report-config-card">
+            <h3><i class="fa-solid fa-sliders"></i> 보고서 생성 옵션</h3>
+            <div class="report-form-group">
+              <label for="rep-start-date">집계 시작일</label>
+              <input type="date" id="rep-start-date" class="form-control" value="2026-06-01">
+            </div>
+            <div class="report-form-group">
+              <label for="rep-end-date">집계 종료일</label>
+              <input type="date" id="rep-end-date" class="form-control" value="2026-06-30">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="reportComponent.generateDraft()">
+              <i class="fa-solid fa-arrows-rotate"></i> 보고서 데이터 집계
+            </button>
+            <div class="report-tip-box">
+              <p><i class="fa-solid fa-lightbulb"></i> <strong>Tip:</strong> 선택한 기간 동안 수행된 캘린더 일정과 학습 기록이 아래 보고서 서식에 표 형태로 자동 취합됩니다.</p>
+            </div>
+          </div>
+
+          <!-- Report Preview / Edit / Export Card -->
+          <div class="glass-card report-preview-card">
+            <div class="report-preview-header">
+              <h3><i class="fa-solid fa-file-pdf"></i> 활동 보고서 미리보기 및 편집</h3>
+              <button class="btn btn-success" id="btn-download-pdf" onclick="reportComponent.downloadPDF()" disabled>
+                <i class="fa-solid fa-download"></i> PDF 다운로드
+              </button>
+            </div>
+
+            <!-- PDF Container Layout (A4 styled layout) -->
+            <div class="report-print-container" id="report-print-area">
+              <div class="report-watermark">MentoHub Draft</div>
+              <div class="report-print-header">
+                <h2>대학생 멘토링 프로그램 활동 보고서</h2>
+                <div class="report-meta-dates" id="rep-meta-period">활동 기간: 2026.06.01 ~ 2026.06.30</div>
+              </div>
+
+              <!-- General Info Table -->
+              <table class="report-table info-table">
+                <tr>
+                  <th width="15%">프로그램명</th>
+                  <td width="35%">대학생-고등학생 멘토링 15기</td>
+                  <th width="15%">제출 연월</th>
+                  <td width="35%" id="rep-submission-month">2026년 06월</td>
+                </tr>
+                <tr>
+                  <th>멘토 (지도교사)</th>
+                  <td>김민수 (서울대학교 수학교육과)</td>
+                  <th>멘티 (대상학생)</th>
+                  <td>이영희 (한국고등학교 1학년)</td>
+                </tr>
+                <tr>
+                  <th>총 활동 횟수</th>
+                  <td id="rep-total-sessions">3회</td>
+                  <th>총 활동 시간</th>
+                  <td id="rep-total-hours">6시간</td>
+                </tr>
+              </table>
+
+              <!-- Schedule / Topic details Table -->
+              <h4 class="report-section-title">■ 세부 멘토링 활동 내역</h4>
+              <table class="report-table detail-table">
+                <thead>
+                  <tr>
+                    <th width="8%">회기</th>
+                    <th width="18%">일자 및 시간</th>
+                    <th width="15%">과목</th>
+                    <th width="25%">학습 주제</th>
+                    <th width="34%">주요 학습 및 지도 내용</th>
+                  </tr>
+                </thead>
+                <tbody id="rep-detail-tbody">
+                  <tr>
+                    <td colspan="5" class="empty-text">보고서 데이터를 집계해주세요.</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Custom Text Area for summary/feedback (Editable in draft mode) -->
+              <h4 class="report-section-title">■ 특이사항 및 종합 의견 (편집 가능)</h4>
+              <div class="report-summary-box">
+                <textarea id="rep-summary-text" class="report-editable-textarea" rows="4" placeholder="이달의 멘토링 활동 요약 및 멘티의 태도 변화, 특이사항이 있다면 직접 여기에 입력해 주세요. PDF 파일 다운로드 시 이 작성한 텍스트 내용이 보고서에 온전히 포함됩니다."></textarea>
+              </div>
+
+              <!-- Signatures -->
+              <div class="report-signature-section">
+                <p>위와 같이 멘토링 활동 보고서를 제출합니다.</p>
+                <div class="report-date-signature" id="rep-today-date">2026년 06월 21일</div>
+                <div class="signatures-row">
+                  <div class="sig-col">멘토 서명: <span class="sig-name">김민수 (인)</span></div>
+                  <div class="sig-col">운영국 확인: <span class="sig-name">(서명)</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- CALENDAR EVENT MODAL -->
+  <div id="calendar-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="calendar-modal-title">멘토링 일정 등록</h3>
+        <button class="btn-close-modal" onclick="calendarComponent.closeModal()">&times;</button>
+      </div>
+      <form id="calendar-schedule-form" onsubmit="calendarComponent.handleSubmit(event)">
+        <input type="hidden" id="sch-id">
+        <div class="form-group">
+          <label for="sch-date">활동 일자</label>
+          <input type="date" id="sch-date" class="form-control" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="sch-start-time">시작 시간</label>
+            <input type="time" id="sch-start-time" class="form-control" required>
+          </div>
+          <div class="form-group col-6">
+            <label for="sch-end-time">종료 시간</label>
+            <input type="time" id="sch-end-time" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="sch-subject">활동 과목</label>
+          <select id="sch-subject" class="form-control" required>
+            <option value="수학">수학</option>
+            <option value="과학">과학</option>
+            <option value="영어">영어</option>
+            <option value="코딩">코딩</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="sch-topic">지도 학습 주제</label>
+          <input type="text" id="sch-topic" class="form-control" placeholder="예: 삼각함수 공식 암기" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="calendarComponent.closeModal()">취소</button>
+          <button type="button" class="btn btn-secondary" id="btn-delete-schedule" style="display: none; background-color: var(--color-danger); color: white;" onclick="calendarComponent.deleteEvent()">삭제</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-schedule">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- HTML2PDF CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- ==========================================================================
+       9. APPLICATION LOGIC JAVASCRIPT (from database.js, app.js, and components)
+       ========================================================================== -->
+  <script>
+    // --------------------------------------------------------------------------
+    // A. DATABASE SERVICE (from database.js)
+    // --------------------------------------------------------------------------
+    const DB_PREFIX = "mentohub_";
+
+    const MOCK_USERS = {
+      mentor: { id: "mentor", name: "김민수", role: "mentor", details: "서울대학교 수학교육과 (멘토)", targetMentee: "이영희" },
+      mentee: { id: "mentee", name: "이영희", role: "mentee", details: "한국고등학교 1학년 (멘티)", targetMentor: "김민수" },
+      admin: { id: "admin", name: "사무국 담당자", role: "admin", details: "운영본부 관리자", scope: "전체 멘토링 커플" }
+    };
+
+    const INITIAL_SCHEDULES = [
+      { id: "sch_1", date: "2026-06-03", startTime: "16:00", endTime: "18:00", subject: "수학", topic: "다항식의 연산 및 인수분해", mentorName: "김민수", menteeName: "이영희", status: "completed" },
+      { id: "sch_2", date: "2026-06-10", startTime: "16:00", endTime: "18:00", subject: "수학", topic: "이차방정식과 이차함수의 관계", mentorName: "김민수", menteeName: "이영희", status: "completed" },
+      { id: "sch_3", date: "2026-06-17", startTime: "16:00", endTime: "18:00", subject: "과학", topic: "물리학 I - 힘과 운동 (속도와 가속도)", mentorName: "김민수", menteeName: "이영희", status: "completed" },
+      { id: "sch_4", date: "2026-06-24", startTime: "16:00", endTime: "18:00", subject: "수학", topic: "삼각함수의 정의와 성질", mentorName: "김민수", menteeName: "이영희", status: "scheduled" },
+      { id: "sch_5", date: "2026-07-01", startTime: "16:00", endTime: "18:00", subject: "과학", topic: "물리학 I - 뉴턴의 운동 법칙 적용", mentorName: "김민수", menteeName: "이영희", status: "scheduled" }
+    ];
+
+    const INITIAL_LOGS = [
+      { id: "log_1", date: "2026-06-03", subject: "수학", hours: 2, topic: "다항식의 연산 및 인수분해", content: "고등 수학(상)의 다항식 기초 개념을 확인하고 인수분해 공식을 복습함. 기본 유형의 문제 풀이를 통해 멘티가 공식을 적용하는 과정을 집중적으로 조사하고 오답 노트를 작성하도록 지도함. 이해도가 높은 편임.", progress: 85, mentorName: "김민수", menteeName: "이영희" },
+      { id: "log_2", date: "2026-06-10", subject: "수학", hours: 2, topic: "이차방정식과 이차함수의 관계", content: "이차방정식의 근의 판별 및 이차함수 그래프의 교점 개수 사이의 연관성을 증명하고 적용 문제를 해결함. 특히 함수 그래프를 활용한 시각적 이해를 중점적으로 훈련함. 판별식 활용 부분에서 멘티가 기호 계산 실수를 줄일 수 있도록 연습문제를 과제로 제시함.", progress: 80, mentorName: "김민수", menteeName: "이영희" },
+      { id: "log_3", date: "2026-06-17", subject: "과학", hours: 2, topic: "물리학 I - 힘과 운동 (속도와 가속도)", content: "가속도의 정의를 이해하고 등가속도 직선 운동의 세 가지 핵심 공식을 함께 분석함. 그래프(v-t) 분석을 통해 이동거리와 변위의 물리적 차이를 시각화하여 확인해 줌. 멘티가 개념 부분에서 헷갈려하던 부분을 상당 부분 해소함.", progress: 90, mentorName: "김민수", menteeName: "이영희" }
+    ];
+
+    const INITIAL_FEED = [
+      {
+        id: "feed_1",
+        authorName: "이영희",
+        authorRole: "mentee",
+        content: "수학 삼각함수 공식이 너무 많아서 외우기가 힘들어요. 멘토님만의 암기 비법이나 단원 공부 팁이 있을까요? ㅠㅠ",
+        date: "2026-06-18 19:42",
+        comments: [
+          { id: "c_1", authorName: "김민수", authorRole: "mentor", content: "영희 학생 반가워요! 삼각함수는 억지로 식만 외우기보다는 1) 반지름이 1인 단위원을 그리면서 정의(사인=y, 코사인=x, 탄젠트=기울기)를 시각화하여 이해하는 것을 최우선으로 해야 헷갈리지 않아요. 다음 6/24 과외 세션 때 핵심 패턴 몇 개를 같이 정리해 볼게요!", date: "2026-06-18 21:10" }
+        ]
+      },
+      {
+        id: "feed_2",
+        authorName: "김민수",
+        authorRole: "mentor",
+        content: "이번 주 6/24(수) 멘토링은 예정대로 오후 4시에 진행하도록 하겠습니다. 미리 예습 문제집의 삼각함수 정의 파트 개념만 가볍게 읽고 오면 수업 효율이 훨씬 높아집니다!",
+        date: "2026-06-20 10:15",
+        comments: [
+          { id: "c_2", authorName: "이영희", authorRole: "mentee", content: "네 멘토님! 알려주신 대로 앞부분 예습해 가겠습니다. 수요일에 뵙겠습니다~", date: "2026-06-20 12:30" }
+        ]
+      },
+      {
+        id: "feed_3",
+        authorName: "이영희",
+        authorRole: "mentee",
+        content: "오늘 물리 복습하다가 이동거리와 변위의 차이점에 대해 궁금한 점이 생겼는데, 만약 육상 트랙을 한 바퀴 다 돌았을 때의 이동거리와 변위는 각각 어떻게 계산되나요?",
+        date: "2026-06-17 21:05",
+        comments: [
+          { id: "c_3", authorName: "김민수", authorRole: "mentor", content: "좋은 질문입니다! 한 바퀴를 완전히 도는 경우, 1) 이동거리는 실제로 트랙을 한 바퀴 달린 '곡선의 길이 전체(예: 400m)'가 되지만, 2) 변위는 처음 위치와 나중 위치의 직선거리이므로 제자리로 돌아왔기 때문에 '0'이 됩니다. 즉 방향과 위치 변화만을 따지는 변위의 특성 때문입니다.", date: "2026-06-17 21:50" }
+        ]
+      }
+    ];
+
+    class MentoDatabase {
+      constructor() {
+        this.init();
+      }
+
+      init() {
+        if (!localStorage.getItem(DB_PREFIX + "initialized")) {
+          localStorage.setItem(DB_PREFIX + "schedules", JSON.stringify(INITIAL_SCHEDULES));
+          localStorage.setItem(DB_PREFIX + "logs", JSON.stringify(INITIAL_LOGS));
+          localStorage.setItem(DB_PREFIX + "feed", JSON.stringify(INITIAL_FEED));
+          localStorage.setItem(DB_PREFIX + "initialized", "true");
+        }
+      }
+
+      getCurrentUser() {
+        const user = localStorage.getItem(DB_PREFIX + "current_user");
+        return user ? JSON.parse(user) : null;
+      }
+
+      setCurrentUser(role) {
+        if (MOCK_USERS[role]) {
+          localStorage.setItem(DB_PREFIX + "current_user", JSON.stringify(MOCK_USERS[role]));
+          return MOCK_USERS[role];
+        }
+        return null;
+      }
+
+      logout() {
+        localStorage.removeItem(DB_PREFIX + "current_user");
+      }
+
+      getSchedules() {
+        return JSON.parse(localStorage.getItem(DB_PREFIX + "schedules") || "[]");
+      }
+
+      saveSchedule(schedule) {
+        const schedules = this.getSchedules();
+        if (schedule.id) {
+          const idx = schedules.findIndex(s => s.id === schedule.id);
+          if (idx !== -1) schedules[idx] = schedule;
+        } else {
+          schedule.id = "sch_" + Date.now();
+          schedules.push(schedule);
+        }
+        localStorage.setItem(DB_PREFIX + "schedules", JSON.stringify(schedules));
+        return schedule;
+      }
+
+      deleteSchedule(id) {
+        let schedules = this.getSchedules();
+        schedules = schedules.filter(s => s.id !== id);
+        localStorage.setItem(DB_PREFIX + "schedules", JSON.stringify(schedules));
+      }
+
+      getLogs() {
+        return JSON.parse(localStorage.getItem(DB_PREFIX + "logs") || "[]");
+      }
+
+      saveLog(log) {
+        const logs = this.getLogs();
+        if (log.id) {
+          const idx = logs.findIndex(l => l.id === log.id);
+          if (idx !== -1) logs[idx] = log;
+        } else {
+          log.id = "log_" + Date.now();
+          logs.push(log);
+        }
+        localStorage.setItem(DB_PREFIX + "logs", JSON.stringify(logs));
+        return log;
+      }
+
+      deleteLog(id) {
+        let logs = this.getLogs();
+        logs = logs.filter(l => l.id !== id);
+        localStorage.setItem(DB_PREFIX + "logs", JSON.stringify(logs));
+      }
+
+      getFeeds() {
+        return JSON.parse(localStorage.getItem(DB_PREFIX + "feed") || "[]");
+      }
+
+      addFeedPost(content, authorName, authorRole) {
+        const feeds = this.getFeeds();
+        const newPost = {
+          id: "feed_" + Date.now(),
+          authorName,
+          authorRole,
+          content,
+          date: this.formatCurrentTime(),
+          comments: []
+        };
+        feeds.unshift(newPost);
+        localStorage.setItem(DB_PREFIX + "feed", JSON.stringify(feeds));
+        return newPost;
+      }
+
+      addFeedComment(feedId, content, authorName, authorRole) {
+        const feeds = this.getFeeds();
+        const idx = feeds.findIndex(f => f.id === feedId);
+        if (idx !== -1) {
+          const newComment = {
+            id: "c_" + Date.now(),
+            authorName,
+            authorRole,
+            content,
+            date: this.formatCurrentTime()
+          };
+          feeds[idx].comments.push(newComment);
+          localStorage.setItem(DB_PREFIX + "feed", JSON.stringify(feeds));
+          return newComment;
+        }
+        return null;
+      }
+
+      formatCurrentTime() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const date = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${date} ${hours}:${minutes}`;
+      }
+    }
+
+    window.db = new MentoDatabase();
+
+    // --------------------------------------------------------------------------
+    // B. DASHBOARD LOGIC (from components/dashboard.js)
+    // --------------------------------------------------------------------------
+    class DashboardComponent {
+      init() {
+        this.render();
+      }
+
+      render() {
+        const currentUser = window.db.getCurrentUser();
+        if (!currentUser) return;
+
+        const schedules = window.db.getSchedules();
+        const logs = window.db.getLogs();
+        const feeds = window.db.getFeeds();
+
+        const totalHours = logs.reduce((sum, log) => sum + Number(log.hours), 0);
+        const completedSessions = schedules.filter(s => s.status === 'completed').length;
+        const logCount = logs.length;
+
+        document.getElementById('dash-hours').innerText = `${totalHours}시간`;
+        document.getElementById('dash-sessions').innerText = `${completedSessions}회`;
+        document.getElementById('dash-logs').innerText = `${logCount}건`;
+
+        this.populateNextSession(schedules);
+        this.populatePairInfo(currentUser);
+        this.populateTimeline(schedules, logs, feeds);
+      }
+
+      populateNextSession(schedules) {
+        const nextSessionContainer = document.getElementById('next-session-container');
+        const upcoming = schedules
+          .filter(s => s.status === 'scheduled')
+          .sort((a, b) => new Date(a.date + 'T' + a.startTime) - new Date(b.date + 'T' + b.startTime));
+
+        if (upcoming.length === 0) {
+          nextSessionContainer.innerHTML = `
+            <div class="empty-list-text">
+              <i class="fa-regular fa-calendar-plus" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+              예정된 다음 일정이 없습니다.<br>새 일정을 등록해 보세요!
+            </div>
+          `;
+          return;
+        }
+
+        const next = upcoming[0];
+        const todayStr = this.formatDateString(new Date());
+        const nextDate = new Date(next.date + 'T00:00:00');
+        const todayDate = new Date(todayStr + 'T00:00:00');
+        const diffTime = nextDate - todayDate;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        let dDayText = "";
+        let dDayClass = "dday-badge";
+        if (diffDays === 0) {
+          dDayText = "D-DAY";
+          dDayClass += " today";
+        } else if (diffDays > 0) {
+          dDayText = `D-${diffDays}`;
+        } else {
+          dDayText = `D+${Math.abs(diffDays)}`;
+        }
+
+        const week = ['일', '월', '화', '수', '목', '금', '토'];
+        const dayOfWeek = week[new Date(next.date).getDay()];
+
+        nextSessionContainer.innerHTML = `
+          <div class="session-info-box">
+            <div class="session-top">
+              <span class="session-subject">[${next.subject}] 멘토링 세션</span>
+              <span class="${dDayClass}">${dDayText}</span>
+            </div>
+            <div class="session-time">
+              <i class="fa-regular fa-clock"></i>
+              <span>${next.date} (${dayOfWeek}) ${next.startTime} ~ ${next.endTime}</span>
+            </div>
+            <div class="session-topic">
+              <i class="fa-solid fa-graduation-cap"></i>
+              <span>학습 주제: ${next.topic}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      populatePairInfo(currentUser) {
+        let mentorText = "김민수 (서울대 수학교육과)";
+        let menteeText = "이영희 (한국고등학교 1학년)";
+        
+        if (currentUser.role === 'mentor') {
+          mentorText = `<strong>${currentUser.name} (나)</strong>`;
+          menteeText = `${currentUser.targetMentee} (한국고교)`;
+        } else if (currentUser.role === 'mentee') {
+          mentorText = `${currentUser.targetMentor} (서울대)`;
+          menteeText = `<strong>${currentUser.name} (나)</strong>`;
+        }
+
+        const pairDetails = document.querySelector('.pair-details');
+        if (pairDetails) {
+          pairDetails.innerHTML = `
+            <div class="pair-member">
+              <span class="p-label">지도 멘토</span>
+              <span class="p-value">${mentorText}</span>
+            </div>
+            <div class="pair-arrow"><i class="fa-solid fa-arrows-left-right"></i></div>
+            <div class="pair-member">
+              <span class="p-label">대상 멘티</span>
+              <span class="p-value">${menteeText}</span>
+            </div>
+          `;
+        }
+      }
+
+      populateTimeline(schedules, logs, feeds) {
+        const timelineContainer = document.getElementById('dash-timeline');
+        const events = [];
+
+        schedules.forEach(s => {
+          let title = "";
+          let desc = `주제: ${s.topic}`;
+          let timeKey = s.date + 'T' + s.startTime;
+          let displayTime = `${s.date} ${s.startTime}`;
+
+          if (s.status === 'completed') {
+            title = `[일정 완료] ${s.subject} 멘토링 세션`;
+          } else {
+            title = `[일정 예정] ${s.subject} 멘토링 세션`;
+          }
+          events.push({ title, desc, time: displayTime, sortTime: new Date(timeKey), type: s.status });
+        });
+
+        logs.forEach(l => {
+          events.push({
+            title: `[학습 기록 작성] ${l.subject} - ${l.topic}`,
+            desc: l.content,
+            time: l.date,
+            sortTime: new Date(l.date + 'T18:00:00'),
+            type: 'log'
+          });
+        });
+
+        feeds.forEach(f => {
+          events.push({
+            title: `[소통 피드] ${f.authorName}님이 새 글을 등록했습니다.`,
+            desc: f.content,
+            time: f.date,
+            sortTime: new Date(f.date.replace(' ', 'T')),
+            type: 'feed'
+          });
+        });
+
+        events.sort((a, b) => b.sortTime - a.sortTime);
+
+        if (events.length === 0) {
+          timelineContainer.innerHTML = `<div class="empty-list-text">활동 내역이 없습니다.</div>`;
+          return;
+        }
+
+        const recentEvents = events.slice(0, 5);
+
+        timelineContainer.innerHTML = recentEvents.map(ev => {
+          let timelineClass = "timeline-item";
+          if (ev.type === 'completed' || ev.type === 'log') {
+            timelineClass += " completed";
+          } else if (ev.type === 'scheduled') {
+            timelineClass += " active";
+          }
+
+          return `
+            <div class="${timelineClass}">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <div class="timeline-header">
+                  <span class="timeline-title">${ev.title}</span>
+                  <span class="timeline-time">${ev.time}</span>
+                </div>
+                <div class="timeline-desc">${this.truncateText(ev.desc, 100)}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      formatDateString(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      truncateText(text, max) {
+        if (!text) return "";
+        if (text.length <= max) return text;
+        return text.substring(0, max) + "...";
+      }
+    }
+
+    window.dashboardComponent = new DashboardComponent();
+
+    // --------------------------------------------------------------------------
+    // C. CALENDAR LOGIC (from components/calendar.js)
+    // --------------------------------------------------------------------------
+    class CalendarComponent {
+      constructor() {
+        this.currentDate = new Date();
+        this.currentDate.setFullYear(2026);
+        this.currentDate.setMonth(5);
+      }
+
+      init() {
+        this.render();
+      }
+
+      render() {
+        const currentUser = window.db.getCurrentUser();
+        if (!currentUser) return;
+
+        const btnAddSchedule = document.getElementById('btn-add-schedule');
+        if (currentUser.role === 'mentor') {
+          btnAddSchedule.style.display = 'inline-flex';
+        } else {
+          btnAddSchedule.style.display = 'none';
+        }
+
+        const year = this.currentDate.getFullYear();
+        const month = this.currentDate.getMonth();
+
+        document.getElementById('calendar-month-year').innerText = `${year}년 ${month + 1}월`;
+
+        this.renderDaysGrid(year, month);
+        this.renderMiniScheduleList(year, month);
+      }
+
+      prevMonth() {
+        this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+        this.render();
+      }
+
+      nextMonth() {
+        this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+        this.render();
+      }
+
+      renderDaysGrid(year, month) {
+        const gridContainer = document.getElementById('calendar-days');
+        gridContainer.innerHTML = '';
+
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const totalDays = new Date(year, month + 1, 0).getDate();
+        const prevMonthTotalDays = new Date(year, month, 0).getDate();
+
+        const schedules = window.db.getSchedules();
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+        for (let i = firstDayIndex; i > 0; i--) {
+          const dayNum = prevMonthTotalDays - i + 1;
+          const dateStr = this.formatDateString(year, month - 1, dayNum);
+          const cell = this.createDayCell(dayNum, dateStr, 'outside', schedules, todayStr);
+          gridContainer.appendChild(cell);
+        }
+
+        for (let dayNum = 1; dayNum <= totalDays; dayNum++) {
+          const dateStr = this.formatDateString(year, month, dayNum);
+          const isSunday = new Date(year, month, dayNum).getDay() === 0;
+          const isSaturday = new Date(year, month, dayNum).getDay() === 6;
+          let dayClass = '';
+          if (isSunday) dayClass = 'sunday';
+          else if (isSaturday) dayClass = 'saturday';
+
+          const cell = this.createDayCell(dayNum, dateStr, dayClass, schedules, todayStr);
+          gridContainer.appendChild(cell);
+        }
+
+        const totalCells = gridContainer.children.length;
+        const remainingCells = 42 - totalCells;
+        for (let dayNum = 1; dayNum <= remainingCells; dayNum++) {
+          const dateStr = this.formatDateString(year, month + 1, dayNum);
+          const cell = this.createDayCell(dayNum, dateStr, 'outside', schedules, todayStr);
+          gridContainer.appendChild(cell);
+        }
+      }
+
+      createDayCell(dayNum, dateStr, className, schedules, todayStr) {
+        const dayCell = document.createElement('div');
+        dayCell.className = `calendar-day ${className}`;
+        if (dateStr === todayStr) {
+          dayCell.className += ' today-cell';
+        }
+
+        const currentUser = window.db.getCurrentUser();
+        if (currentUser.role === 'mentor' && !className.includes('outside')) {
+          dayCell.addEventListener('dblclick', () => this.openAddModal(dateStr));
+          dayCell.title = "더블클릭하여 일정을 추가하세요";
+        }
+
+        dayCell.innerHTML = `
+          <div class="day-number-wrapper">
+            <span class="day-number">${dayNum}</span>
+          </div>
+          <div class="day-events-container"></div>
+        `;
+
+        const eventsContainer = dayCell.querySelector('.day-events-container');
+        const daySchedules = schedules.filter(s => s.date === dateStr);
+        
+        daySchedules.forEach(sch => {
+          const pill = document.createElement('div');
+          pill.className = `calendar-event-pill ${sch.status}`;
+          pill.innerText = `${sch.startTime} [${sch.subject}] ${sch.topic}`;
+          pill.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.openEditModal(sch);
+          });
+          eventsContainer.appendChild(pill);
+        });
+
+        return dayCell;
+      }
+
+      renderMiniScheduleList(year, month) {
+        const listContainer = document.getElementById('calendar-list-mini');
+        listContainer.innerHTML = '';
+
+        const schedules = window.db.getSchedules();
+        const monthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+        const monthSchedules = schedules
+          .filter(s => s.date.startsWith(monthPrefix))
+          .sort((a, b) => new Date(a.date + 'T' + a.startTime) - new Date(b.date + 'T' + b.startTime));
+
+        if (monthSchedules.length === 0) {
+          listContainer.innerHTML = `<div class="empty-list-text">이달에 등록된 일정이 없습니다.</div>`;
+          return;
+        }
+
+        monthSchedules.forEach(sch => {
+          const item = document.createElement('div');
+          item.className = `mini-schedule-item ${sch.status}`;
+          item.innerHTML = `
+            <div class="mini-item-header">
+              <span class="mini-item-date">${sch.date}</span>
+              <span class="mini-item-subject badge badge-primary">${sch.subject}</span>
+            </div>
+            <div class="mini-item-time"><i class="fa-regular fa-clock"></i> ${sch.startTime} ~ ${sch.endTime}</div>
+            <div class="mini-item-topic"><i class="fa-solid fa-graduation-cap"></i> ${sch.topic}</div>
+          `;
+          item.addEventListener('click', () => this.openEditModal(sch));
+          listContainer.appendChild(item);
+        });
+      }
+
+      openAddModal(dateStr = '') {
+        const modal = document.getElementById('calendar-modal');
+        document.getElementById('calendar-modal-title').innerText = "멘토링 일정 등록";
+        
+        const form = document.getElementById('calendar-schedule-form');
+        form.reset();
+        document.getElementById('sch-id').value = '';
+        
+        if (dateStr) {
+          document.getElementById('sch-date').value = dateStr;
+        } else {
+          const today = new Date();
+          document.getElementById('sch-date').value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        }
+
+        this.setModalEditable(true);
+        modal.classList.add('active');
+      }
+
+      openEditModal(schedule) {
+        const modal = document.getElementById('calendar-modal');
+        document.getElementById('calendar-modal-title').innerText = "멘토링 일정 상세 및 편집";
+        
+        document.getElementById('sch-id').value = schedule.id;
+        document.getElementById('sch-date').value = schedule.date;
+        document.getElementById('sch-start-time').value = schedule.startTime;
+        document.getElementById('sch-end-time').value = schedule.endTime;
+        document.getElementById('sch-subject').value = schedule.subject;
+        document.getElementById('sch-topic').value = schedule.topic;
+
+        const currentUser = window.db.getCurrentUser();
+        const isMentor = currentUser.role === 'mentor';
+
+        this.setModalEditable(isMentor);
+        modal.classList.add('active');
+      }
+
+      setModalEditable(editable) {
+        const form = document.getElementById('calendar-schedule-form');
+        const inputs = form.querySelectorAll('input, select');
+        inputs.forEach(input => {
+          input.disabled = !editable;
+        });
+
+        const btnDelete = document.getElementById('btn-delete-schedule');
+        const btnSave = document.getElementById('btn-save-schedule');
+        const schId = document.getElementById('sch-id').value;
+
+        if (editable) {
+          btnSave.style.display = 'inline-flex';
+          btnDelete.style.display = schId ? 'inline-flex' : 'none';
+        } else {
+          btnSave.style.display = 'none';
+          btnDelete.style.display = 'none';
+        }
+      }
+
+      closeModal() {
+        const modal = document.getElementById('calendar-modal');
+        modal.classList.remove('active');
+      }
+
+      handleSubmit(e) {
+        e.preventDefault();
+        const currentUser = window.db.getCurrentUser();
+        if (currentUser.role !== 'mentor') return;
+
+        const id = document.getElementById('sch-id').value;
+        const date = document.getElementById('sch-date').value;
+        const startTime = document.getElementById('sch-start-time').value;
+        const endTime = document.getElementById('sch-end-time').value;
+        const subject = document.getElementById('sch-subject').value;
+        const topic = document.getElementById('sch-topic').value;
+
+        const todayStr = this.formatDateString(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+        const status = date <= todayStr ? 'completed' : 'scheduled';
+
+        const schedule = {
+          id: id || undefined,
+          date,
+          startTime,
+          endTime,
+          subject,
+          topic,
+          mentorName: "김민수",
+          menteeName: "이영희",
+          status
+        };
+
+        window.db.saveSchedule(schedule);
+        this.closeModal();
+        this.render();
+        
+        if (typeof window.dashboardComponent !== 'undefined') {
+          window.dashboardComponent.render();
+        }
+      }
+
+      deleteEvent() {
+        const id = document.getElementById('sch-id').value;
+        if (!id) return;
+
+        if (confirm("정말 이 일정을 삭제하시겠습니까?")) {
+          window.db.deleteSchedule(id);
+          this.closeModal();
+          this.render();
+
+          if (typeof window.dashboardComponent !== 'undefined') {
+            window.dashboardComponent.render();
+          }
+        }
+      }
+
+      formatDateString(year, month, day) {
+        const tempDate = new Date(year, month, day);
+        const y = tempDate.getFullYear();
+        const m = String(tempDate.getMonth() + 1).padStart(2, '0');
+        const d = String(tempDate.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+    }
+
+    window.calendarComponent = new CalendarComponent();
+
+    // --------------------------------------------------------------------------
+    // D. STUDY LOGS LOGIC (from components/logs.js)
+    // --------------------------------------------------------------------------
+    class LogsComponent {
+      init() {
+        this.hideForm();
+        this.render();
+      }
+
+      render() {
+        const currentUser = window.db.getCurrentUser();
+        if (!currentUser) return;
+
+        const logs = window.db.getLogs();
+        const btnOpenForm = document.getElementById('btn-open-log-form');
+        
+        const isMentor = currentUser.role === 'mentor';
+        if (isMentor) {
+          btnOpenForm.style.display = 'inline-flex';
+        } else {
+          btnOpenForm.style.display = 'none';
+          this.hideForm();
+        }
+
+        const logsTable = document.querySelector('.logs-table');
+        const actionsHeader = logsTable.querySelector('thead th.actions-col');
+        if (isMentor) {
+          actionsHeader.style.display = '';
+        } else {
+          actionsHeader.style.display = 'none';
+        }
+
+        const tbody = document.getElementById('logs-list-tbody');
+        tbody.innerHTML = '';
+
+        if (logs.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="${isMentor ? 7 : 6}" class="empty-text" style="text-align: center; padding: 40px; color: var(--text-tertiary);">
+                작성된 학습 기록이 없습니다.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        const sortedLogs = [...logs].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        sortedLogs.forEach(log => {
+          const tr = document.createElement('tr');
+          
+          let actionsHTML = '';
+          if (isMentor) {
+            actionsHTML = `
+              <td class="actions-col">
+                <button class="btn-table-action" onclick="logsComponent.editLog('${log.id}')" title="수정"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button class="btn-table-action delete" onclick="logsComponent.deleteLog('${log.id}')" title="삭제"><i class="fa-solid fa-trash-can"></i></button>
+              </td>
+            `;
+          }
+
+          tr.innerHTML = `
+            <td><strong>${log.date}</strong></td>
+            <td><span class="badge badge-primary">${log.subject}</span></td>
+            <td>${log.hours}시간</td>
+            <td><strong>${log.topic}</strong></td>
+            <td><div class="log-text-detail" title="${log.content}">${log.content}</div></td>
+            <td>
+              <div class="table-progress-bar">
+                <div class="table-progress-fill" style="width: ${log.progress}%"></div>
+              </div>
+              <span class="table-progress-text">${log.progress}%</span>
+            </td>
+            ${actionsHTML}
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      showForm(editId = '') {
+        const container = document.getElementById('log-form-container');
+        const form = document.getElementById('study-log-form');
+        const title = document.getElementById('log-form-title');
+        
+        form.reset();
+        document.getElementById('log-edit-id').value = '';
+        document.getElementById('progress-val').innerText = '80%';
+        document.getElementById('log-progress').value = 80;
+
+        if (editId) {
+          title.innerText = "학습 기록 수정";
+          const logs = window.db.getLogs();
+          const log = logs.find(l => l.id === editId);
+          if (log) {
+            document.getElementById('log-edit-id').value = log.id;
+            document.getElementById('log-date').value = log.date;
+            document.getElementById('log-subject').value = log.subject;
+            document.getElementById('log-hours').value = log.hours;
+            document.getElementById('log-topic').value = log.topic;
+            document.getElementById('log-content').value = log.content;
+            document.getElementById('log-progress').value = log.progress;
+            document.getElementById('progress-val').innerText = log.progress + '%';
+          }
+        } else {
+          title.innerText = "학습 기록 등록";
+          const today = new Date();
+          document.getElementById('log-date').value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        }
+
+        container.style.display = 'block';
+        container.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      hideForm() {
+        document.getElementById('log-form-container').style.display = 'none';
+      }
+
+      handleSubmit(e) {
+        e.preventDefault();
+        const currentUser = window.db.getCurrentUser();
+        if (currentUser.role !== 'mentor') return;
+
+        const id = document.getElementById('log-edit-id').value;
+        const date = document.getElementById('log-date').value;
+        const subject = document.getElementById('log-subject').value;
+        const hours = document.getElementById('log-hours').value;
+        const topic = document.getElementById('log-topic').value;
+        const content = document.getElementById('log-content').value;
+        const progress = document.getElementById('log-progress').value;
+
+        const log = {
+          id: id || undefined,
+          date,
+          subject,
+          hours: Number(hours),
+          topic,
+          content,
+          progress: Number(progress),
+          mentorName: "김민수",
+          menteeName: "이영희"
+        };
+
+        window.db.saveLog(log);
+        this.hideForm();
+        this.render();
+
+        if (typeof window.dashboardComponent !== 'undefined') {
+          window.dashboardComponent.render();
+        }
+      }
+
+      editLog(id) {
+        this.showForm(id);
+      }
+
+      deleteLog(id) {
+        if (confirm("정말 이 학습 기록을 삭제하시겠습니까?")) {
+          window.db.deleteLog(id);
+          this.render();
+
+          if (typeof window.dashboardComponent !== 'undefined') {
+            window.dashboardComponent.render();
+          }
+        }
+      }
+    }
+
+    window.logsComponent = new LogsComponent();
+
+    // --------------------------------------------------------------------------
+    // E. FEED Q&A LOGIC (from components/feed.js)
+    // --------------------------------------------------------------------------
+    class FeedComponent {
+      init() {
+        this.render();
+      }
+
+      render() {
+        const currentUser = window.db.getCurrentUser();
+        if (!currentUser) return;
+
+        const roleLabel = currentUser.role === 'mentor' ? '멘토' : (currentUser.role === 'mentee' ? '멘티' : '운영자');
+        document.getElementById('feed-write-user').innerHTML = `
+          <i class="fa-solid fa-user-pen"></i> ${currentUser.name} (${roleLabel})
+        `;
+
+        const feeds = window.db.getFeeds();
+        const listContainer = document.getElementById('feed-posts-list');
+        listContainer.innerHTML = '';
+
+        if (feeds.length === 0) {
+          listContainer.innerHTML = `
+            <div class="glass-card text-center" style="text-align: center; padding: 40px; color: var(--text-tertiary);">
+              <i class="fa-regular fa-comments" style="font-size: 2.5rem; display: block; margin-bottom: 12px; color: var(--text-tertiary);"></i>
+              소통 피드에 등록된 글이 없습니다. 첫 글을 등록해 보세요!
+            </div>
+          `;
+          return;
+        }
+
+        feeds.forEach(post => {
+          const card = document.createElement('div');
+          card.className = 'feed-post-card';
+
+          let commentsHTML = '';
+          if (post.comments && post.comments.length > 0) {
+            commentsHTML = post.comments.map(c => {
+              const cAvatarLetter = c.authorName.charAt(0);
+              const cRoleBadge = c.authorRole === 'mentor' ? '멘토' : (c.authorRole === 'mentee' ? '멘티' : '운영자');
+              const cBadgeClass = c.authorRole === 'mentor' ? 'badge-primary' : (c.authorRole === 'mentee' ? 'badge-success' : 'badge-warning');
+
+              return `
+                <div class="feed-comment-item">
+                  <div class="comment-avatar">${cAvatarLetter}</div>
+                  <div class="comment-content-box">
+                    <div class="comment-author-row">
+                      <span class="comment-author-name">${c.authorName}</span>
+                      <span class="badge ${cBadgeClass}">${cRoleBadge}</span>
+                    </div>
+                    <div class="comment-text">${c.content}</div>
+                    <span class="comment-date">${c.date}</span>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          } else {
+            commentsHTML = `<div class="empty-list-text" style="padding: 10px; font-size: 0.8rem;">작성된 답변이나 댓글이 없습니다.</div>`;
+          }
+
+          const avatarLetter = post.authorName.charAt(0);
+          const postRoleBadge = post.authorRole === 'mentor' ? '멘토' : (post.authorRole === 'mentee' ? '멘티' : '운영자');
+          const postBadgeClass = post.authorRole === 'mentor' ? 'badge-primary' : (post.authorRole === 'mentee' ? 'badge-success' : 'badge-warning');
+          const commentsCount = post.comments ? post.comments.length : 0;
+
+          card.innerHTML = `
+            <div class="feed-post-header">
+              <div class="avatar">${avatarLetter}</div>
+              <div class="feed-post-header-info">
+                <div class="feed-author-name-row">
+                  <span class="feed-author-name">${post.authorName}</span>
+                  <span class="badge ${postBadgeClass}">${postRoleBadge}</span>
+                </div>
+                <span class="feed-post-date">${post.date}</span>
+              </div>
+            </div>
+            <div class="feed-post-body">${post.content}</div>
+            <div class="feed-post-actions">
+              <button class="feed-action-btn" onclick="feedComponent.toggleComments('${post.id}')">
+                <i class="fa-regular fa-comment-dots"></i> 댓글 (${commentsCount})
+              </button>
+            </div>
+            
+            <div class="feed-comments-section" id="comments-section-${post.id}" style="display: none;">
+              <div class="comments-list" id="comments-list-${post.id}">
+                ${commentsHTML}
+              </div>
+              <div class="write-comment-box">
+                <input type="text" class="write-comment-input" id="comment-input-${post.id}" placeholder="댓글 또는 답변을 입력하세요..." onkeydown="feedComponent.handleCommentKey(event, '${post.id}')">
+                <button class="btn btn-primary btn-comment-submit" onclick="feedComponent.submitComment('${post.id}')">등록</button>
+              </div>
+            </div>
+          `;
+
+          listContainer.appendChild(card);
+        });
+      }
+
+      handleSubmit(e) {
+        e.preventDefault();
+        const currentUser = window.db.getCurrentUser();
+        if (!currentUser) return;
+
+        const input = document.getElementById('feed-input');
+        const content = input.value.trim();
+        if (!content) return;
+
+        window.db.addFeedPost(content, currentUser.name, currentUser.role);
+        input.value = '';
+        this.render();
+
+        if (typeof window.dashboardComponent !== 'undefined') {
+          window.dashboardComponent.render();
+        }
+      }
+
+      toggleComments(postId) {
+        const section = document.getElementById(`comments-section-${postId}`);
+        if (section.style.display === 'none') {
+          section.style.display = 'flex';
+          const input = document.getElementById(`comment-input-${postId}`);
+          if (input) input.focus();
+        } else {
+          section.style.display = 'none';
+        }
+      }
+
+      handleCommentKey(e, postId) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.submitComment(postId);
+        }
+      }
+
+      submitComment(postId) {
+        const currentUser = window.db.getCurrentUser();
+        if (!currentUser) return;
+
+        const input = document.getElementById(`comment-input-${postId}`);
+        const content = input.value.trim();
+        if (!content) return;
+
+        window.db.addFeedComment(postId, content, currentUser.name, currentUser.role);
+        input.value = '';
+        
+        this.render();
+        document.getElementById(`comments-section-${postId}`).style.display = 'flex';
+
+        if (typeof window.dashboardComponent !== 'undefined') {
+          window.dashboardComponent.render();
+        }
+      }
+    }
+
+    window.feedComponent = new FeedComponent();
+
+    // --------------------------------------------------------------------------
+    // F. REPORT GENERATOR LOGIC (from components/report.js)
+    // --------------------------------------------------------------------------
+    class ReportComponent {
+      init() {
+        document.getElementById('rep-start-date').value = '2026-06-01';
+        document.getElementById('rep-end-date').value = '2026-06-30';
+        this.generateDraft();
+      }
+
+      generateDraft() {
+        const startDate = document.getElementById('rep-start-date').value;
+        const endDate = document.getElementById('rep-end-date').value;
+
+        if (!startDate || !endDate) {
+          alert("집계 시작일과 종료일을 올바르게 선택해 주세요.");
+          return;
+        }
+
+        if (new Date(startDate) > new Date(endDate)) {
+          alert("시작일은 종료일보다 이전 날짜여야 합니다.");
+          return;
+        }
+
+        const schedules = window.db.getSchedules();
+        const logs = window.db.getLogs();
+
+        const rangeSchedules = schedules
+          .filter(s => s.date >= startDate && s.date <= endDate)
+          .sort((a, b) => new Date(a.date + 'T' + a.startTime) - new Date(b.date + 'T' + b.startTime));
+
+        const rangeLogs = logs.filter(l => l.date >= startDate && l.date <= endDate);
+
+        const totalSessions = rangeSchedules.length;
+        const totalHours = rangeLogs.reduce((sum, log) => sum + Number(log.hours), 0);
+
+        document.getElementById('rep-meta-period').innerText = `활동 기간: ${startDate.replace(/-/g, '.')} ~ ${endDate.replace(/-/g, '.')}`;
+        
+        const dateObj = new Date(startDate);
+        document.getElementById('rep-submission-month').innerText = `${dateObj.getFullYear()}년 ${String(dateObj.getMonth() + 1).padStart(2, '0')}월`;
+
+        document.getElementById('rep-total-sessions').innerText = `${totalSessions}회`;
+        document.getElementById('rep-total-hours').innerText = `${totalHours}시간`;
+
+        const tbody = document.getElementById('rep-detail-tbody');
+        tbody.innerHTML = '';
+
+        if (totalSessions === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="empty-text">선택한 기간 동안 수행된 멘토링 일정이 없습니다.</td>
+            </tr>
+          `;
+          document.getElementById('btn-download-pdf').disabled = true;
+          document.getElementById('rep-summary-text').value = '';
+          return;
+        }
+
+        document.getElementById('btn-download-pdf').disabled = false;
+
+        rangeSchedules.forEach((sch, index) => {
+          const matchingLog = rangeLogs.find(l => l.date === sch.date);
+          const logContent = matchingLog ? matchingLog.content : "상세 학습 기록이 아직 작성되지 않았습니다.";
+          
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${index + 1}회기</td>
+            <td>${sch.date}<br>${sch.startTime} ~ ${sch.endTime}</td>
+            <td>${sch.subject}</td>
+            <td><strong>${sch.topic}</strong></td>
+            <td style="text-align: left; line-height: 1.4;">${logContent}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        let autoSummary = "";
+        if (rangeLogs.length > 0) {
+          const subjects = [...new Set(rangeLogs.map(l => l.subject))].join(', ');
+          const topics = rangeLogs.map(l => l.topic).join(', ');
+          
+          autoSummary = `해당 기간 동안 주로 [${subjects}] 과목에 대해 멘토링 활동을 집중적으로 진행하였습니다.\n`;
+          autoSummary += `세부적으로는 [${topics}] 주제를 주로 다루었습니다. 멘티인 이영희 학생은 전반적으로 수업에 매우 성실하게 참여하였으며, 복습 과제 수행도가 준수합니다.\n`;
+          autoSummary += `특히 개념 설명 후 진행한 실전 문제 풀이에서 이해도가 향상되는 양상을 보여주었습니다. 향후 멘토링 과정에서도 이와 같은 추세가 유지되도록 지도를 이어갈 예정입니다.`;
+        } else {
+          autoSummary = "해당 기간 동안 일정은 소화되었으나 등록된 세부 학습 기록지가 없어 공란으로 처리되었습니다. 필요시 멘토링 진행 요약을 직접 기재해 주세요.";
+        }
+
+        document.getElementById('rep-summary-text').value = autoSummary;
+
+        const today = new Date();
+        document.getElementById('rep-today-date').innerText = `${today.getFullYear()}년 ${String(today.getMonth() + 1).padStart(2, '0')}월 ${String(today.getDate()).padStart(2, '0')}일`;
+
+        const currentUser = window.db.getCurrentUser();
+        const signaturesRow = document.querySelector('.signatures-row');
+        let mentorSig = "김민수 (인)";
+        
+        if (currentUser && currentUser.role === 'mentor') {
+          mentorSig = `${currentUser.name} (인)`;
+        }
+        
+        signaturesRow.innerHTML = `
+          <div class="sig-col">멘토 서명: <span class="sig-name">${mentorSig}</span></div>
+          <div class="sig-col">운영국 확인: <span class="sig-name">(서명)</span></div>
+        `;
+      }
+
+      downloadPDF() {
+        const element = document.getElementById('report-print-area');
+        const textarea = document.getElementById('rep-summary-text');
+        const startDate = document.getElementById('rep-start-date').value;
+        const endDate = document.getElementById('rep-end-date').value;
+
+        const textVal = textarea.value;
+        const printDiv = document.createElement('div');
+        printDiv.id = "temp-print-summary-div";
+        printDiv.style.fontSize = "0.85rem";
+        printDiv.style.lineHeight = "1.6";
+        printDiv.style.whiteSpace = "pre-wrap";
+        printDiv.style.color = "#111827";
+        printDiv.innerText = textVal;
+        
+        textarea.parentNode.appendChild(printDiv);
+        textarea.style.display = 'none';
+
+        const opt = {
+          margin:       15,
+          filename:     `mentoring_activity_report_${startDate}_to_${endDate}.pdf`,
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, useCORS: true, logging: false },
+          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+          textarea.style.display = 'block';
+          const tempDiv = document.getElementById('temp-print-summary-div');
+          if (tempDiv) tempDiv.remove();
+        }).catch(err => {
+          console.error("PDF generation failed: ", err);
+          textarea.style.display = 'block';
+          const tempDiv = document.getElementById('temp-print-summary-div');
+          if (tempDiv) tempDiv.remove();
+          alert("PDF 생성 중 오류가 발생하였습니다. 다시 시도해 주세요.");
+        });
+      }
+    }
+
+    window.reportComponent = new ReportComponent();
+
+    // --------------------------------------------------------------------------
+    // G. MAIN APPLICATION COORDINATOR (from app.js)
+    // --------------------------------------------------------------------------
+    class MentoHubApp {
+      constructor() {
+        this.currentView = 'dashboard';
+      }
+
+      init() {
+        this.setupTheme();
+        this.setupNavigation();
+        this.checkSession();
+      }
+
+      setupTheme() {
+        const savedTheme = localStorage.getItem('mentohub_theme') || 'dark';
+        document.documentElement.className = `theme-${savedTheme}`;
+        this.updateThemeIcon(savedTheme);
+      }
+
+      toggleTheme() {
+        const isDark = document.documentElement.classList.contains('theme-dark');
+        const newTheme = isDark ? 'light' : 'dark';
+        
+        document.documentElement.className = `theme-${newTheme}`;
+        localStorage.setItem('mentohub_theme', newTheme);
+        this.updateThemeIcon(newTheme);
+      }
+
+      updateThemeIcon(theme) {
+        const icon = document.getElementById('theme-icon');
+        if (icon) {
+          if (theme === 'dark') {
+            icon.className = 'fa-solid fa-sun';
+          } else {
+            icon.className = 'fa-solid fa-moon';
+          }
+        }
+      }
+
+      setupNavigation() {
+        const navItems = document.querySelectorAll('.nav-menu .nav-item');
+        navItems.forEach(item => {
+          item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const view = item.getAttribute('data-view');
+            this.navigateTo(view);
+          });
+        });
+
+        window.addEventListener('hashchange', () => {
+          const hash = window.location.hash.replace('#', '') || 'dashboard';
+          const navItem = document.querySelector(`.nav-menu .nav-item[data-view="${hash}"]`);
+          if (navItem) {
+            this.navigateTo(hash, false);
+          }
+        });
+      }
+
+      checkSession() {
+        const user = window.db.getCurrentUser();
+        const loginOverlay = document.getElementById('login-overlay');
+        const appContainer = document.getElementById('app-container');
+
+        if (user) {
+          loginOverlay.classList.remove('active');
+          appContainer.style.display = 'grid';
+          
+          this.updateSidebarUser(user);
+          document.getElementById('quick-role-select').value = user.role;
+
+          const hash = window.location.hash.replace('#', '') || 'dashboard';
+          this.navigateTo(hash);
+        } else {
+          loginOverlay.classList.add('active');
+          appContainer.style.display = 'none';
+          window.location.hash = '';
+        }
+      }
+
+      login(role) {
+        const user = window.db.setCurrentUser(role);
+        if (user) {
+          this.checkSession();
+        }
+      }
+
+      logout() {
+        window.db.logout();
+        this.checkSession();
+      }
+
+      switchRole(role) {
+        const user = window.db.setCurrentUser(role);
+        if (user) {
+          this.updateSidebarUser(user);
+          this.renderCurrentView();
+          
+          if (typeof window.dashboardComponent !== 'undefined') {
+            window.dashboardComponent.render();
+          }
+
+          this.showToast(`${user.name}(${role === 'mentor' ? '멘토' : (role === 'mentee' ? '멘티' : '운영자')}) 역할로 전환되었습니다.`);
+        }
+      }
+
+      updateSidebarUser(user) {
+        const avatar = document.getElementById('sidebar-user-avatar');
+        const name = document.getElementById('sidebar-user-name');
+        const role = document.getElementById('sidebar-user-role');
+
+        if (avatar) avatar.innerText = user.name.charAt(0);
+        if (name) name.innerText = user.name;
+        
+        if (role) {
+          const roleLabel = user.role === 'mentor' ? '멘토' : (user.role === 'mentee' ? '멘티' : '운영 관리자');
+          role.innerText = roleLabel;
+          
+          role.style.backgroundColor = user.role === 'mentor' ? 'rgba(99, 102, 241, 0.2)' : (user.role === 'mentee' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)');
+          role.style.color = user.role === 'mentor' ? 'var(--color-info)' : (user.role === 'mentee' ? 'var(--color-success)' : 'var(--color-warning)');
+        }
+      }
+
+      navigateTo(view, updateHash = true) {
+        const navItems = document.querySelectorAll('.nav-menu .nav-item');
+        navItems.forEach(item => {
+          if (item.getAttribute('data-view') === view) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
+
+        const panels = document.querySelectorAll('.view-panel');
+        panels.forEach(panel => {
+          if (panel.id === `view-${view}`) {
+            panel.classList.add('active');
+          } else {
+            panel.classList.remove('active');
+          }
+        });
+
+        this.updateHeaderTitles(view);
+
+        if (updateHash) {
+          window.location.hash = view;
+        }
+
+        this.currentView = view;
+        this.renderCurrentView();
+      }
+
+      updateHeaderTitles(view) {
+        const title = document.getElementById('view-title');
+        const subtitle = document.getElementById('view-subtitle');
+
+        const headers = {
+          dashboard: { t: "대시보드", s: "멘토링 진행 통계 및 다음 세션을 한눈에 파악합니다." },
+          calendar: { t: "일정 관리", s: "멘토링 약속 일정을 등록하고 캘린더에서 조회합니다." },
+          logs: { t: "학습 기록", s: "멘토링 과목별 학습 진행과 상세 내용을 기록하고 관리합니다." },
+          feed: { t: "소통 피드", s: "멘토와 멘티가 실시간으로 질문을 남기고 자유롭게 소통하는 공간입니다." },
+          report: { t: "활동 보고서", s: "지정 기간 동안의 일정을 기반으로 보고서를 자동 생성하고 PDF로 다운로드합니다." }
+        };
+
+        if (headers[view]) {
+          title.innerText = headers[view].t;
+          subtitle.innerText = headers[view].s;
+        }
+      }
+
+      renderCurrentView() {
+        switch (this.currentView) {
+          case 'dashboard':
+            if (window.dashboardComponent) window.dashboardComponent.init();
+            break;
+          case 'calendar':
+            if (window.calendarComponent) window.calendarComponent.init();
+            break;
+          case 'logs':
+            if (window.logsComponent) window.logsComponent.init();
+            break;
+          case 'feed':
+            if (window.feedComponent) window.feedComponent.init();
+            break;
+          case 'report':
+            if (window.reportComponent) window.reportComponent.init();
+            break;
+        }
+      }
+
+      showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'glass-card toast-msg';
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.right = '20px';
+        toast.style.padding = '12px 20px';
+        toast.style.zIndex = '1000';
+        toast.style.backgroundColor = 'var(--bg-secondary)';
+        toast.style.border = '1px solid var(--border-color-glow)';
+        toast.style.boxShadow = 'var(--box-shadow-md)';
+        toast.style.borderRadius = 'var(--border-radius-sm)';
+        toast.style.fontSize = '0.9rem';
+        toast.style.fontWeight = '600';
+        toast.style.color = 'var(--text-primary)';
+        toast.style.animation = 'slideUp 0.3s ease';
+        toast.innerText = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transition = 'opacity 0.5s ease';
+          setTimeout(() => toast.remove(), 500);
+        }, 2500);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      window.app = new MentoHubApp();
+      window.app.init();
+    });
+  </script>
+</body>
+</html>
