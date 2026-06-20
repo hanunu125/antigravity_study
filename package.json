@@ -1,0 +1,16 @@
+{
+  "name": "mentohub",
+  "version": "1.0.0",
+  "description": "대학생 멘토링 프로그램 통합 관리 서비스 (MentoHub)",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 3000"
+  },
+  "keywords": [
+    "mentoring",
+    "management",
+    "vanilla-js"
+  ],
+  "author": "Antigravity",
+  "license": "MIT"
+}
